@@ -1,43 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-  SwamOS logo — monogramme "S" en dégradé cyan/violet sur badge sombre.
-  Aucun élément <text> : rendu identique partout (hicolor, SDDM, fastfetch).
-  Remplaçable par un visuel final sans toucher à la configuration.
--->
+<!-- SwamOS v1 « Sunset » — badge dégradé orange/rose/violet, S blanc dynamique, éclair -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#171326"/>
-      <stop offset="1" stop-color="#241b3a"/>
+    <linearGradient id="v1bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff7a18"/>
+      <stop offset="0.55" stop-color="#ff2d78"/>
+      <stop offset="1" stop-color="#7c3aed"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#22d3ee"/>
-      <stop offset="1" stop-color="#a78bfa"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.75">
-      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.16"/>
-      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    <radialGradient id="v1glow" cx="0.5" cy="0.4" r="0.8">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
   </defs>
+  <rect x="16" y="16" width="480" height="480" rx="116" fill="url(#v1bg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="116" fill="url(#v1glow)"/>
 
-  <!-- badge arrondi -->
-  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
-  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#glow)"/>
-  <rect x="30" y="30" width="452" height="452" rx="100" fill="none"
-        stroke="url(#accent)" stroke-opacity="0.35" stroke-width="6"/>
+  <g transform="rotate(-8 256 256)">
+    <path d="M 368 164
+             C 368 112, 306 88, 256 88
+             C 186 88, 146 132, 146 194
+             C 146 256, 214 266, 256 276
+             C 302 286, 366 296, 366 354
+             C 366 410, 310 444, 256 444
+             C 200 444, 142 416, 142 356"
+          fill="none" stroke="#ffffff" stroke-width="56" stroke-linecap="round"/>
+  </g>
 
-  <!-- monogramme S (double courbe, caps ronds) -->
-  <path d="M 366 168
-           C 366 116, 306 92, 256 92
-           C 188 92, 148 134, 148 194
-           C 148 254, 214 266, 256 276
-           C 300 286, 364 296, 364 352
-           C 364 408, 310 442, 256 442
-           C 202 442, 146 416, 146 358"
-        fill="none" stroke="url(#accent)" stroke-width="54"
-        stroke-linecap="round"/>
-
-  <!-- accent gaming : point de puissance en bas à droite -->
-  <circle cx="386" cy="392" r="22" fill="url(#accent)"/>
-  <circle cx="386" cy="392" r="10" fill="#171326"/>
+  <path d="M 402 350 L 372 402 L 396 402 L 380 452 L 424 390 L 398 390 L 416 350 Z"
+        fill="#ffffff" fill-opacity="0.95"/>
 </svg>
