@@ -11,15 +11,17 @@ modules:
     snippets:
       - dnf5 -y install --allowerasing cachyos-settings scx-scheds scx-tools scx-manager ananicy-cpp cachyos-ananicy-rules
 
-  # Impression, scan, découverte et firewall (no-op si déjà dans la base)
+  # Impression générique (cups : IPP Everywhere, la plupart des imprimantes
+  # marchent sans driver constructeur), découverte et firewall.
+  ## hplip/hplip-gui volontairement ABSENTS : drivers HP spécifiques —
+  ## inutile d'alourdir une image publique pour un constructeur donné.
+  ## Qui en a besoin : `rpm-ostree install hplip hplip-gui` (ou distrobox).
   - type: dnf
     install:
       packages:
         - firewalld
         - firewall-config
         - firewall-applet
-        - hplip-gui
-        - hplip
         - cups
         - avahi
         - tmux
