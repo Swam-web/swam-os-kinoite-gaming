@@ -1,4 +1,4 @@
-# swam-os-kinoite-gaming
+# SwamOS — kinoite-gaming
 
 Image **bootc** (Fedora Atomic) **universelle** basée sur **Kinoite officiel**
 (`quay.io/fedora-ostree-desktops/kinoite:44`), construite avec
@@ -6,6 +6,10 @@ Image **bootc** (Fedora Atomic) **universelle** basée sur **Kinoite officiel**
 [`swam-os-kinoite-nvidia`](https://github.com/Swam-web/swam-os-kinoite) et
 `swam-os-kinoite-amd` : **les deux piles GPU cohabitent dans la même image**, le
 matériel décide au boot, sans aucune question ni configuration.
+
+**Marque** : le système s'appelle **SwamOS** (os-release, GRUB, fastfetch, écran
+de connexion SDDM rebadgé, logo dans « À propos du système »). L'identité
+technique reste Fedora (`ID=fedora`, `VARIANT_ID=kinoite`).
 
 - **Base** : `quay.io/fedora-ostree-desktops/kinoite` version `44`
 - **Image publiée** : `ghcr.io/swam-web/swam-os-kinoite-gaming:latest`
