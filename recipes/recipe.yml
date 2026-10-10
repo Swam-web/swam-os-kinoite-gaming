@@ -1,0 +1,114 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+name: swam-os-kinoite-gaming
+description: Universal Kinoite gaming image — CachyOS kernel, NVIDIA open + AMD ROCm (auto-detected at boot)
+base-image: quay.io/fedora-ostree-desktops/kinoite
+image-version: 44
+platforms:
+  - linux/amd64
+modules:
+  # Copie de system_files -> / (équivalent du cp -avf du build.sh d'origine)
+  - type: files
+    files:
+      - source: system
+        destination: /
+
+  # Kernel CachyOS clang-LTO remplaçant le kernel Fedora
+  # (shims kernel-install, rpm --erase --nodeps, versionlock)
+  - type: script
+    scripts:
+      - kernel-cachyos.sh
+
+  # NVIDIA (RPMFusion), kmods rpmbuild clang contre le kernel CachyOS
+  ## Ne se lie qu'au matériel NVIDIA : inerte sur machine AMD
+  - type: script
+    scripts:
+      - nvidia.sh
+
+  # AMD ROCm : dépôt officiel + pile userland
+  ## amdgpu est in-tree (kernel CachyOS) : inerte sur machine NVIDIA
+  - type: script
+    scripts:
+      - rocm.sh
+
+  # MediaTek MT7927 WiFi + MT6639 Bluetooth, précompilés
+  ## Modules dans updates/ : ne se lient qu'au matériel concerné
+  - type: script
+    scripts:
+      - mt7927.sh
+
+  # Codecs système universels : RPMFusion + VA-API/Vulkan AMD (freeworld)
+  # + pont NVDEC -> VA-API NVIDIA (libva-nvidia-driver), 32 bits inclus
+  - type: script
+    scripts:
+      - codecs.sh
+
+  # Wine + winetricks + protontricks
+  - type: script
+    scripts:
+      - wine.sh
+
+  # Optimisations réactivité/légèreté (les 4 points) :
+  #   Baloo masqué, irqbalance et Discover retirés ;
+  #   KWin gaming (tearing) et compression btrfs via files/system
+  - type: script
+    scripts:
+      - tuning.sh
+
+  # Addons CachyOS, paquets système, services (cups/avahi en socket-activation)
+  - from-file: base/packages.yml
+
+  # Gaming (flatpaks)
+  - from-file: base/gaming.yml
+
+  # Nettoyage : toolchain de build, repos et COPRs désactivés
+  - type: script
+    scripts:
+      - cleanup.sh
+
+  # Arguments noyau — les deux piles cohabitent, le matériel décide :
+  #   rd.driver.blacklist=nouveau + modprobe.blacklist=nouveau :
+  #                                          empêche nouveau de prendre le GPU
+  #                                          avant nvidia (écran noir au boot).
+  #                                          Posés ici car le scriptlet
+  #                                          akmod-nvidia est skippé
+  #                                          (--noscripts) dans nvidia.sh.
+  #   nvidia-drm.modeset=1                  : KMS obligatoire pour Wayland/NVIDIA
+  #   nvidia.NVreg_PreserveVideoMemoryAllocations : corrige la VRAM non libérée
+  #                                          après une veille (stutter au réveil)
+  #   amdgpu.ppfeaturemask                  : débloque OC/undervolt (LACT, CoreCtrl)
+  #   amdgpu.gpu_recovery                   : récupère d'un crash GPU au lieu du gel
+  #   nowatchdog                            : supprime la surveillance NMI
+  #   split_lock_detect=off                 : évite les ralentissements de certains
+  #                                          jeux/émulateurs (split lock)
+  #   tsc=reliable clocksource=tsc          : horloge basse latence ; retirer si
+  #                                          dérive horaire constatée (VM exotiques)
+  ## Option sécurité/perf (non activée, à décommenter en connaissance de cause) :
+  ##   mitigations=off
+  - type: kargs
+    kargs:
+      - rd.driver.blacklist=nouveau
+      - modprobe.blacklist=nouveau
+      - nvidia-drm.modeset=1
+      - nvidia.NVreg_PreserveVideoMemoryAllocations=1
+      - amdgpu.ppfeaturemask=0xffffffff
+      - amdgpu.gpu_recovery=1
+      - nowatchdog
+      - split_lock_detect=off
+      - tsc=reliable
+      - clocksource=tsc
+
+  # Initramfs : régénéré pour le kernel CachyOS installé
+  # (équivaut au « dracut --kver … --add ostree --add fido2 » du build.sh)
+  - type: initramfs
+
+  # Politiques de signature cosign (rpm-ostree + bootc) — requis par la CI
+  - type: signing
+
+# Caveats :
+# - Secure Boot : le kernel CachyOS et les modules ne sont pas signés
+#   avec une clé Microsoft-trustée. Désactiver Secure Boot ou enroll MOK.
+# - Le kernel CachyOS est clang/LTO : les kmods tiers doivent être
+#   compilés pour cette ABI exacte (fait dans nvidia.sh et mt7927.sh).
+# - Sur machine AMD, force_drivers=nvidia dans l'initramfs émet un
+#   avertissement bénin (nvidia.ko ne trouve pas de matériel) — sans effet.

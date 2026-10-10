@@ -1,0 +1,94 @@
+# swam-os-kinoite-gaming
+
+Image **bootc** (Fedora Atomic) **universelle** basée sur **Kinoite officiel**
+(`quay.io/fedora-ostree-desktops/kinoite:44`), construite avec
+[BlueBuild](https://blue-build.org/). C'est la **fusion** de
+[`swam-os-kinoite-nvidia`](https://github.com/Swam-web/swam-os-kinoite) et
+`swam-os-kinoite-amd` : **les deux piles GPU cohabitent dans la même image**, le
+matériel décide au boot, sans aucune question ni configuration.
+
+- **Base** : `quay.io/fedora-ostree-desktops/kinoite` version `44`
+- **Image publiée** : `ghcr.io/swam-web/swam-os-kinoite-gaming:latest`
+
+## Pourquoi une image universelle
+
+| Matériel | Ce qui se passe |
+|---|---|
+| NVIDIA | `nvidia.ko` (akmod compilé clang) se charge, `nouveau` blackisté ; ROCm présent mais inerte |
+| AMD | `amdgpu` in-tree (kernel CachyOS) se charge ; la pile NVIDIA est inerte |
+| Laptop hybride (iGPU AMD + dGPU NVIDIA) | Les deux se chargent et coopèrent — cas impossible avec deux images séparées |
+
+## Contenu
+
+| | Détail |
+|---|---|
+| **Kernel** | CachyOS `kernel-cachyos-lto` (Clang LTO, 1000 Hz, full preempt) — COPR `bieszczaders/kernel-cachyos-lto`, remplace le kernel Fedora (pattern `install-kernel-akmods`) |
+| **NVIDIA (RPMFusion)** | `akmod-nvidia` + userland `xorg-x11-drv-nvidia` (`.i686` inclus), kmods recompilés **clang** contre le kernel CachyOS (`pahole` + `xorg-x11-drv-nvidia-kmodsrc`) |
+| **AMD ROCm** | Dépôt officiel AMD (RHEL9) : `rocm-hip-runtime`, `rocm-opencl-runtime`, `rocm-smi` — correctif `/opt` inclus |
+| **MT7927 / MT6639** | Modules WiFi/BT out-of-tree patchés (`jetm/mediatek-mt7927-dkms`), précompilés, + firmware BT `MT6639` |
+| **Codecs universels** | RPMFusion : ffmpeg complet, `@multimedia`, openh264, libdvdcss ; VA-API/Vulkan **AMD** (`mesa-*-freeworld`) **et** pont NVDEC→VA-API **NVIDIA** (`libva-nvidia-driver`) ; 32 bits complets |
+| **Gaming** | gamescope, gamemode, mangohud, vkBasalt, goverlay, steam-devices (RPM) ; Steam, Lutris, Heroic, Bottles, OBS… (Flathub, `default-flatpaks`) |
+| **Réactivité (socle CachyOS)** | `scx_lavd` (sched_ext, mode Gaming auto), `ananicy-cpp`, zram + sysctls `cachyos-settings` |
+| **Légèreté** | Baloo (indexeur) masqué, `irqbalance` et `plasma-discover` retirés, `cups`/`avahi` en **socket-activation**, KWin `AllowTearing`, compression btrfs `zstd` |
+
+## Installation
+
+```bash
+sudo bootc switch ghcr.io/swam-web/swam-os-kinoite-gaming:latest
+sudo systemctl reboot
+```
+
+## Caveats
+
+- **Secure Boot** : le kernel CachyOS et les modules construits ne sont pas signés par une clé
+  approuvée par Microsoft. Désactiver Secure Boot, ou enrôler votre propre clé MOK.
+- Le driver **NVIDIA open** supporte **Turing (RTX 20) et plus récent**.
+- Sur machine **AMD uniquement**, l'initramfs force `nvidia.ko` qui ne trouve pas de matériel :
+  avertissement bénin au boot, sans effet.
+- Le build **MT7927** télécharge une tarball `kernel.org` et un ZIP driver depuis le CDN ASUS
+  **au moment du build**.
+- `tsc=reliable clocksource=tsc` : retirer ces kargs en cas de dérive horaire (VM exotiques).
+- `mitigations=off` est volontairement **non activé** (voir commentaire dans `recipe.yml`).
+
+## Build
+
+```bash
+# image conteneur
+sudo -E nix run github:blue-build/cli -- build recipe recipes/recipe.yml
+
+# validation seule (rapide)
+bluebuild validate recipes/recipe.yml
+```
+
+## Images disque (ISO / qcow2)
+
+Via **bootc-image-builder** (lire le caveat du dépôt `swam-os-kinoite-nvidia` sur les
+limites de `bluebuild generate-iso`) :
+
+```bash
+sudo podman run --rm --privileged --pull=newer \
+  -v ./output:/output \
+  -v /var/lib/containers/storage:/var/lib/containers/storage \
+  quay.io/centos-bootc/bootc-image-builder:latest \
+  --type anaconda-iso \
+  --config ./disk_config/iso.toml \
+  --local --chown $(id -u):$(id -g) \
+  ghcr.io/swam-web/swam-os-kinoite-gaming:latest
+```
+
+Ou via GitHub Actions : `Actions → Build disk images → Run workflow`.
+
+## Signature
+
+Images signées avec **cosign** (clé publique dans `cosign.pub`, secret GitHub `SIGNING_SECRET`).
+
+```bash
+cosign verify --key cosign.pub ghcr.io/swam-web/swam-os-kinoite-gaming:latest
+```
+
+## Crédits
+
+[Fedora Kinoite](https://fedoraproject.org/kinoite/) / [Universal Blue](https://universal-blue.org/),
+[BlueBuild](https://blue-build.org/), [CachyOS](https://cachyos.org/), [RPMFusion](https://rpmfusion.org/),
+[AMD ROCm](https://www.amd.com/fr/developer/resources/rocm-hub.html),
+[jetm/mediatek-mt7927-dkms](https://github.com/jetm/mediatek-mt7927-dkms).

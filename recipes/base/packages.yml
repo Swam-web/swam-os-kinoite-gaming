@@ -1,0 +1,61 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
+# Fichier inclus via `from-file:` -> doit contenir une clé `modules:`
+# (schéma module-list-v1.json = objet { modules: [...] }, PAS une liste nue).
+modules:
+  # Addons CachyOS : cachyos-settings fournit son propre zram-generator-defaults,
+  # en conflit avec celui de la base — --allowerasing échange pour la version
+  # CachyOS (d'où le snippet dnf5 plutôt que le module dnf).
+  # Kinoite ne shippe pas scx-scheds/scx-tools : installés depuis le COPR.
+  - type: script
+    snippets:
+      - dnf5 -y install --allowerasing cachyos-settings scx-scheds scx-tools scx-manager ananicy-cpp cachyos-ananicy-rules
+
+  # Impression, scan, découverte et firewall (no-op si déjà dans la base)
+  - type: dnf
+    install:
+      packages:
+        - firewalld
+        - firewall-config
+        - firewall-applet
+        - hplip-gui
+        - hplip
+        - cups
+        - avahi
+        - tmux
+        - distrobox
+
+  # Gaming système (RPM) — paquets vérifiés présents dans Fedora 44.
+  # Les variantes .i686 sont celles que réclament les jeux 32 bits de Steam.
+  - type: dnf
+    install:
+      packages:
+        - gamescope        # compositeur/upscaler (FSR, résolutions custom, HDR)
+        - gamemode         # optimisation CPU/GPU à la demande
+        - gamemode.i686
+        - mangohud         # overlay FPS/temps de frame
+        - mangohud.i686
+        - vkBasalt         # post-traitement (CAS, équivalent ReShade)
+        - vkBasalt.i686
+        - goverlay         # interface de configuration MangoHud
+        - vulkan-tools     # vulkaninfo (diagnostic)
+        - steam-devices    # règles udev des manettes (Steam, DualSense, Xbox…)
+
+  # Services — « hyper léger » :
+  #   cups + avahi en SOCKET-ACTIVATION (démarrés uniquement à l'usage) ;
+  #   les .service équivalents sont explicitement désactivés (la base peut
+  #   les avoir activés). firewalld reste actif dès le boot.
+  #   swam-btrfs-compress : compression zstd du rootfs btrfs (no-op sinon).
+  - type: systemd
+    system:
+      enabled:
+        - cups.socket
+        - scx_loader.service
+        - avahi-daemon.socket
+        - firewalld.service
+        - podman.socket
+        - swam-btrfs-compress.service
+      disabled:
+        - cups.service
+        - avahi-daemon.service
+        - irqbalance.service
