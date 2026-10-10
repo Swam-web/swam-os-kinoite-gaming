@@ -45,8 +45,10 @@ sudo systemctl reboot
 - Le driver **NVIDIA open** supporte **Turing (RTX 20) et plus récent**.
 - Sur machine **AMD uniquement**, l'initramfs force `nvidia.ko` qui ne trouve pas de matériel :
   avertissement bénin au boot, sans effet.
-- Le build **MT7927** télécharge une tarball `kernel.org` et un ZIP driver depuis le CDN ASUS
-  **au moment du build**.
+- **MT7927 (fail-soft)** : le module télécharge une tarball `kernel.org` et un ZIP driver depuis
+  le CDN ASUS **au moment du build**. Si cette chaîne est indisponible ou modifiée, l'image est
+  livrée **sans le firmware Bluetooth MT6639** (avertissement dans le log) — le WiFi MT7927
+  fonctionne alors via le driver in-tree `mt7925e`. Le reste de l'image n'est pas impacté.
 - `tsc=reliable clocksource=tsc` : retirer ces kargs en cas de dérive horaire (VM exotiques).
 - `mitigations=off` est volontairement **non activé** (voir commentaire dans `recipe.yml`).
 
