@@ -28,7 +28,7 @@ technique reste Fedora (`ID=fedora`, `VARIANT_ID=kinoite`).
 |---|---|
 | **Kernel** | CachyOS `kernel-cachyos-lto` (Clang LTO, 1000 Hz, full preempt) — COPR `bieszczaders/kernel-cachyos-lto`, remplace le kernel Fedora (pattern `install-kernel-akmods`) |
 | **NVIDIA (RPMFusion)** | `akmod-nvidia` + userland `xorg-x11-drv-nvidia` (`.i686` inclus), kmods recompilés **clang** contre le kernel CachyOS (`pahole` + `xorg-x11-drv-nvidia-kmodsrc`) |
-| **AMD ROCm** | Dépôt officiel AMD (RHEL9) : `rocm-hip-runtime`, `rocm-opencl-runtime`, `rocm-smi` — correctif `/opt` inclus |
+| **AMD ROCm (minimal gaming)** | Dépôt officiel AMD (RHEL9) : `rocm-core`, `rocm-opencl-runtime`, `rocm-smi` — correctif `/opt` inclus. **Sans la pile HIP** (`rocm-hip-runtime`, `rocm-libs`/rocBLAS ≈ 5-6 Go) : inutile aux jeux (Vulkan/DXVK via mesa) — qui en a besoin : `rpm-ostree install rocm-hip-runtime rocm-libs` |
 | **MT7927 / MT6639** | Modules WiFi/BT out-of-tree patchés (`jetm/mediatek-mt7927-dkms`), précompilés, + firmware BT `MT6639` |
 | **Codecs universels** | RPMFusion : ffmpeg complet, `@multimedia`, openh264, libdvdcss ; VA-API/Vulkan **AMD** (`mesa-*-freeworld`) **et** pont NVDEC→VA-API **NVIDIA** (`libva-nvidia-driver`) ; 32 bits complets |
 | **Gaming** | gamescope, gamemode, mangohud, vkBasalt, goverlay, steam-devices (RPM) ; Steam, Lutris, Heroic, Bottles, OBS… (Flathub, `default-flatpaks`) |
