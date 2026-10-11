@@ -37,6 +37,24 @@ modules:
     scripts:
       - mt7927.sh
 
+  # Périphériques gaming — xpadneo (BT Xbox), xone (dongle USB Xbox)
+  ## FAIL-SOFT : add-on matériel, sources GitHub ; le build public continue
+  - type: script
+    scripts:
+      - controllers.sh
+
+  # Périphériques gaming — OpenRazer (claviers/souris Razer)
+  ## FAIL-SOFT ; kmods clang contre le kernel CachyOS + daemon Python
+  - type: script
+    scripts:
+      - razer.sh
+
+  # Périphériques gaming — OpenTabletDriver (tablettes graphiques)
+  ## FAIL-SOFT ; userland pur (RPM officiel du projet + dotnet Fedora)
+  - type: script
+    scripts:
+      - tablet.sh
+
   # Codecs système universels : RPMFusion + VA-API/Vulkan AMD (freeworld)
   # + pont NVDEC -> VA-API NVIDIA (libva-nvidia-driver), 32 bits inclus
   - type: script

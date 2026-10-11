@@ -32,6 +32,7 @@ technique reste Fedora (`ID=fedora`, `VARIANT_ID=kinoite`).
 | **MT7927 / MT6639** | Modules WiFi/BT out-of-tree patchés (`jetm/mediatek-mt7927-dkms`), précompilés, + firmware BT `MT6639` |
 | **Codecs universels** | RPMFusion : ffmpeg complet, `@multimedia`, openh264, libdvdcss ; VA-API/Vulkan **AMD** (`mesa-*-freeworld`) **et** pont NVDEC→VA-API **NVIDIA** (`libva-nvidia-driver`) ; 32 bits complets |
 | **Gaming** | gamescope, gamemode, mangohud, vkBasalt, goverlay, steam-devices (RPM) ; Steam, Lutris, Heroic, Bottles, OBS… (Flathub, `default-flatpaks`) |
+| **Périphériques (fail-soft)** | **xpadneo** (manettes Xbox BT, rumble avancé), **xone** (dongle USB Xbox + firmware), **OpenRazer** (kmods clang + daemon), **OpenTabletDriver** (tablettes), `libcec` (HDMI CEC via adaptateur Pulse-Eight) — un échec de source n'abolit pas le build |
 | **Réactivité (socle CachyOS)** | `scx_lavd` (sched_ext, mode Gaming auto), `ananicy-cpp`, zram + sysctls `cachyos-settings` |
 | **Légèreté** | Baloo (indexeur) masqué, `irqbalance` et `plasma-discover` retirés, `cups`/`avahi` en **socket-activation**, KWin `AllowTearing`, compression btrfs `zstd` |
 
