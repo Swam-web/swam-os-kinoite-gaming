@@ -73,11 +73,6 @@ modules:
     scripts:
       - tuning.sh
 
-  # Branding SwamOS : os-release (nom + LOGO), icône hicolor, SDDM rebadgé
-  - type: script
-    scripts:
-      - branding.sh
-
   # Addons CachyOS, paquets système, services (cups/avahi en socket-activation)
   - from-file: base/packages.yml
 
