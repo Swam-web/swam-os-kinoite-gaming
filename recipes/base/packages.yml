@@ -50,6 +50,8 @@ modules:
   #   les .service équivalents sont explicitement désactivés (la base peut
   #   les avoir activés). firewalld reste actif dès le boot.
   #   swam-btrfs-compress : compression zstd du rootfs btrfs (no-op sinon).
+  #   NB : irqbalance n'existe PAS dans kinoite — le désactiver ferait
+  #   échouer le module (unité inexistante), d'où son absence de la liste.
   - type: systemd
     system:
       enabled:
@@ -62,4 +64,3 @@ modules:
       disabled:
         - cups.service
         - avahi-daemon.service
-        - irqbalance.service
