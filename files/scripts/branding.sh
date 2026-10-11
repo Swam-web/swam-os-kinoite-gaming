@@ -20,7 +20,7 @@ LOGO_SVG="/usr/share/icons/hicolor/scalable/apps/swamos-logo.svg"
 OSR="/usr/lib/os-release"
 sed -i \
     -e 's/^NAME=.*/NAME="SwamOS"/' \
-    -e 's/^PRETTY_NAME=.*/PRETTY_NAME="SwamOS (from Fedora Kinoite 44)"/' \
+    -e 's/^PRETTY_NAME=.*/PRETTY_NAME="SwamOS 44"/' \
     -e 's/^LOGO=.*/LOGO=swamos-logo/' \
     -e 's|^HOME_URL=.*|HOME_URL="https://github.com/Swam-web/swam-os-kinoite-gaming"|' \
     "${OSR}"
