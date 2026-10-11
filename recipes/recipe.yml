@@ -125,9 +125,10 @@ modules:
   # (équivaut au « dracut --kver … --add ostree --add fido2 » du build.sh)
   - type: initramfs
 
-  ## SIGNATURE désactivée temporairement : le secret SIGNING_SECRET doit
-  ## contenir la clé PRIVÉE (cosign.key). À réactiver en décommentant :
-  # - type: signing
+  # Politiques de signature cosign (rpm-ostree + bootc)
+  ## SIGNING_SECRET = contenu de cosign.key (-----BEGIN PRIVATE KEY-----),
+  ## PAS cosign.pub !
+  - type: signing
 
 # Caveats :
 # - Secure Boot : le kernel CachyOS et les modules ne sont pas signés
