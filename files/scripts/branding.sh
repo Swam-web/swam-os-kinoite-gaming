@@ -27,6 +27,19 @@ sed -i \
 grep -q '^LOGO=' "${OSR}" || echo 'LOGO=swamos-logo' >> "${OSR}"
 echo "os-release rebadge SwamOS (direct /usr/lib/os-release)"
 
+### Plymouth : le « petit logo en bas » au boot = watermark du thème spinner
+## (thème par défaut Fedora ; plasma-workspace ne shippe plus de thème plymouth).
+## Les PNG (128px + @2x) sont pré-rendus dans files/system/usr/share/swamos/.
+WM_SRC="/usr/share/swamos/watermark.png"
+if [[ -f "${WM_SRC}" && -d "/usr/share/plymouth/themes/spinner" ]]; then
+    for F in /usr/share/plymouth/themes/spinner/watermark*.png; do
+        [[ -f "${F}" ]] && install -Dm644 "${WM_SRC}" "${F}"
+    done
+    echo "Plymouth : watermark spinner rebadgé SwamOS"
+else
+    echo "AVERTISSEMENT : thème plymouth spinner absent — watermark non rebadgé"
+fi
+
 ### Écran de connexion : Plasma Login Manager (kinoite 44, fork SDDM).
 ## Le thème breeze référence son logo via theme.conf (clé logo=) et/ou des
 ## fichiers *logo*.svg embarqués — mêmes mécanismes que SDDM, répertoire neuf.
