@@ -25,8 +25,22 @@ modules:
           #        Branches vérifiées dans le summary Flathub : 21.08..26.08.
           #        25.08 + 26.08 couvrent les deux runtimes courants.
           #   OBS Studio = capture / streaming
+          #   BoxBuddy = interface graphique distrobox (distrobox est en RPM
+          #     mais sans GUI ; ID vérifié sur Flathub)
+          #   VulkanLayer gamescope/vkBasalt = équivalents flatpak des RPM
+          #     du même nom : les couches RPM n'agissent pas dans les jeux
+          #     flatpak (Steam/Lutris) — il faut les layers du runtime
+          #     freedesktop. Branches vérifiées dans le summary Flathub :
+          #     gamescope 25.08 + 26.08 ; vkBasalt s'arrête à 25.08
+          #     (projet dormant, dernière release 2023) — les apps sur
+          #     runtime 26.08 n'auront pas vkBasalt tant qu'il n'y a pas
+          #     de build correspondant.
           - com.usebottles.bottles
           - io.github.benjamimgois.goverlay
           - org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/25.08
           - org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/26.08
+          - org.freedesktop.Platform.VulkanLayer.gamescope/x86_64/25.08
+          - org.freedesktop.Platform.VulkanLayer.gamescope/x86_64/26.08
+          - org.freedesktop.Platform.VulkanLayer.vkBasalt/x86_64/25.08
+          - io.github.dvlv.boxbuddyrs
           - com.obsproject.Studio

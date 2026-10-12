@@ -92,6 +92,9 @@ modules:
   #                                          akmod-nvidia est skippé
   #                                          (--noscripts) dans nvidia.sh.
   #   nvidia-drm.modeset=1                  : KMS obligatoire pour Wayland/NVIDIA
+  #   nvidia-drm.fbdev=1                    : framebuffer nvidia-drm natif
+  #                                          (console propre au boot, évite
+  #                                          des soucis Wayland ; driver 545+)
   #   nvidia.NVreg_PreserveVideoMemoryAllocations : corrige la VRAM non libérée
   #                                          après une veille (stutter au réveil)
   #   amdgpu.ppfeaturemask                  : débloque OC/undervolt (LACT, CoreCtrl)
@@ -108,6 +111,7 @@ modules:
       - rd.driver.blacklist=nouveau
       - modprobe.blacklist=nouveau
       - nvidia-drm.modeset=1
+      - nvidia-drm.fbdev=1
       - nvidia.NVreg_PreserveVideoMemoryAllocations=1
       - amdgpu.ppfeaturemask=0xffffffff
       - amdgpu.gpu_recovery=1
@@ -115,6 +119,8 @@ modules:
       - split_lock_detect=off
       - tsc=reliable
       - clocksource=tsc
+      ## Optionnel — micro-freezes APST NVMe (coût : conso en veille) :
+      # - nvme_core.default_ps_max_latency_us=0
 
   # Initramfs : régénéré pour le kernel CachyOS installé
   # (équivaut au « dracut --kver … --add ostree --add fido2 » du build.sh)

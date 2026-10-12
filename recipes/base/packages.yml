@@ -29,6 +29,13 @@ modules:
         - fastfetch
         - libcec
 
+  # Gestion thermique Intel (thermald) : évite le throttling CPU.
+  ## Inerte sur machine AMD (aucun senseur Intel) — sans effet.
+  - type: dnf
+    install:
+      packages:
+        - thermald
+
   # Gaming système (RPM) — paquets vérifiés présents dans Fedora 44.
   # Les variantes .i686 sont celles que réclament les jeux 32 bits de Steam.
   - type: dnf
@@ -61,6 +68,7 @@ modules:
         - firewalld.service
         - podman.socket
         - swam-btrfs-compress.service
+        - thermald.service    # thermique Intel (inerte sur AMD)
       disabled:
         - cups.service
         - avahi-daemon.service
