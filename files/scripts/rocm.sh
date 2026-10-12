@@ -8,11 +8,15 @@
 ## compris) — le depot AMD ne propose qu'amdgpu-dkms, inutilisable sur bootc.
 set -ouex pipefail
 
-### Depot officiel AMD (ROCm)
+### Depot officiel AMD (ROCm) — EPINGLÉ sur 7.2.4 (dernière stable de la branche 7.2)
+## latest/ suit la dernière publiée : une ROCm 8.x pourrait casser l'ABI userland
+## (libhsa/OpenCL) au prochain dnf upgrade. Épinglé = on choisit QUAND monter.
+## Bump : liste des versions sur https://repo.radeon.com/rocm/rhel9/
+## (7.2.4 vérifiée 2026-10-12 : repodata 200 OK ; 7.2.3 dispo aussi)
 cat > /etc/yum.repos.d/rocm.repo <<'EOF'
 [rocm]
 name=AMD ROCm
-baseurl=https://repo.radeon.com/rocm/rhel9/latest/main/
+baseurl=https://repo.radeon.com/rocm/rhel9/7.2.4/main/
 enabled=1
 gpgcheck=1
 gpgkey=https://repo.radeon.com/rocm/rocm.gpg.key
