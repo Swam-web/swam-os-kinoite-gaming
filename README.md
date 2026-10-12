@@ -31,9 +31,10 @@ technique reste Fedora (`ID=fedora`, `VARIANT_ID=kinoite`).
 | **AMD ROCm (minimal gaming)** | Dépôt officiel AMD (RHEL9) : `rocm-core`, `rocm-opencl-runtime`, `rocm-smi` — correctif `/opt` inclus. **Sans la pile HIP** (`rocm-hip-runtime`, `rocm-libs`/rocBLAS ≈ 5-6 Go) : inutile aux jeux (Vulkan/DXVK via mesa) — qui en a besoin : `rpm-ostree install rocm-hip-runtime rocm-libs` |
 | **MT7927 / MT6639** | Modules WiFi/BT out-of-tree patchés (`jetm/mediatek-mt7927-dkms`), précompilés, + firmware BT `MT6639` |
 | **Codecs universels** | RPMFusion : ffmpeg complet, `@multimedia`, openh264, libdvdcss ; VA-API/Vulkan **AMD** (`mesa-*-freeworld`) **et** pont NVDEC→VA-API **NVIDIA** (`libva-nvidia-driver`) ; 32 bits complets |
-| **Gaming** | gamescope, gamemode, mangohud, vkBasalt, goverlay, steam-devices (RPM) ; Steam, Lutris, Heroic, Bottles, OBS… (Flathub, `default-flatpaks`) |
+| **Gaming** | gamescope, gamemode, mangohud, vkBasalt, goverlay, steam-devices (RPM) ; Steam, Lutris, Heroic, Bottles, OBS, **BoxBuddy** (GUI distrobox)… (Flathub, `default-flatpaks`) ; **VulkanLayer flatpak** MangoHud/gamescope/vkBasalt (refs épinglées 25.08/26.08 — les couches RPM n'agissent pas dans les jeux flatpak) |
 | **Périphériques (fail-soft)** | **xpadneo** (manettes Xbox BT, rumble avancé), **xone** (dongle USB Xbox + firmware), **OpenRazer** (kmods clang + daemon), **OpenTabletDriver** (tablettes), `libcec` (HDMI CEC via adaptateur Pulse-Eight) — un échec de source n'abolit pas le build |
 | **Réactivité (socle CachyOS)** | `scx_lavd` (sched_ext, mode Gaming auto), `ananicy-cpp`, zram + sysctls `cachyos-settings` |
+| **Optimisations gaming** | `gamemode.ini` (renice -10 via drop-in `CAP_SYS_NICE`, gouverneur `performance`) ; PipeWire quantum **256** (~5,3 ms) ; sysctl **BBR + fq + `vm.max_map_count`** (absents de `cachyos-settings`) ; animations Plasma ÷2 (`kdeglobals` /etc/xdg) ; `thermald` (Intel, inerte AMD) ; karg `nvidia-drm.fbdev=1` |
 | **Légèreté** | Baloo (indexeur) masqué, `irqbalance` et `plasma-discover` retirés, `cups`/`avahi` en **socket-activation**, KWin `AllowTearing`, compression btrfs `zstd` |
 
 ## Installation
