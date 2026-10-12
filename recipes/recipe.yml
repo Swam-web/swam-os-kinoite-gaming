@@ -97,6 +97,11 @@ modules:
   #                                          des soucis Wayland ; driver 545+)
   #   nvidia.NVreg_PreserveVideoMemoryAllocations : corrige la VRAM non libérée
   #                                          après une veille (stutter au réveil)
+  #   transparent_hugepage=always           : THP agressif = CachyOS natif
+  #                                          (tcmalloc : Chromium, Proton) ;
+  #                                          défaut Fedora = madvise, et
+  #                                          cachyos-settings ne pose que le
+  #                                          defrag (tmpfiles), pas le mode.
   #   amdgpu.ppfeaturemask                  : débloque OC/undervolt (LACT, CoreCtrl)
   #   amdgpu.gpu_recovery                   : récupère d'un crash GPU au lieu du gel
   #   nowatchdog                            : supprime la surveillance NMI
@@ -113,6 +118,7 @@ modules:
       - nvidia-drm.modeset=1
       - nvidia-drm.fbdev=1
       - nvidia.NVreg_PreserveVideoMemoryAllocations=1
+      - transparent_hugepage=always
       - amdgpu.ppfeaturemask=0xffffffff
       - amdgpu.gpu_recovery=1
       - nowatchdog
