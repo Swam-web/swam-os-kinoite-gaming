@@ -36,7 +36,10 @@ concurrency:
 jobs:
   build:
     name: Build disk images
-    runs-on: ${{ inputs.platform == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
+    # arm64 uniquement sur workflow_dispatch explicite : l'image publiée est
+    # amd64-only (recipe.yml platforms) — sur push/PR (inputs vides), le
+    # runner arm64 ne peut pas tirer le manifest amd64 → forcer ubuntu-24.04.
+    runs-on: ${{ (github.event_name == 'workflow_dispatch' && inputs.platform == 'arm64') && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     strategy:
       fail-fast: false
       matrix:

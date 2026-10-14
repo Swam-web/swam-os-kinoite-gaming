@@ -44,11 +44,18 @@ build_xone() {
 
     dnf5 -y --refresh install git cabextract
 
-    ## Épinglé sur le commit « Fix compatibility with latest kernel » (2025-12)
+    ## Épinglé sur le commit « Fix compatibility with latest kernel » (2025-12).
+    ## Fetch PAR SHA (GitHub accepte allowAnySHA1InWant) : un clone --depth 1
+    ## ne contient que le tip — checkout d'un SHA plus ancien échouerait
+    ## (« reference is not a tree ») et le fail-soft livrait l'image SANS xone
+    ## silencieusement (bug 2026-10). Le tip actuel (3484f60) n'est qu'une
+    ## note README postérieure au commit épinglé.
     XONE_SHA="a70a3c8b9591bde813e673f4cd1b16059d696774"
     XONE_DIR="$(mktemp -d /tmp/xone-XXXXXXXX)"
-    git clone --depth 1 https://github.com/medusalix/xone "${XONE_DIR}"
-    git -C "${XONE_DIR}" checkout "${XONE_SHA}"
+    git init -q "${XONE_DIR}"
+    git -C "${XONE_DIR}" remote add origin https://github.com/medusalix/xone
+    git -C "${XONE_DIR}" fetch -q --depth 1 origin "${XONE_SHA}"
+    git -C "${XONE_DIR}" checkout -q FETCH_HEAD
 
     export CC=clang CXX=clang++ LD=ld.lld LLVM=1 LLVM_IAS=1
     make -C "${KBUILD}" M="${XONE_DIR}" modules

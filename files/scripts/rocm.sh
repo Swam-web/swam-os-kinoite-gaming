@@ -26,27 +26,27 @@ type=rpm-md
 repo_gpgcheck=0
 EOF
 
-### /opt : sans ca, les RPM rocm-* ne peuvent pas s'installer
-## Dans l'image de base, /opt est un lien vers /var/opt dont la cible n'existe
-## pas au moment du build (/var est peuple au runtime). RPM tente alors :
-##   mkdir /opt              -> cpio: mkdir failed - File exists
-##                              (le lien est deja la)
-##   mkdir /opt/rocm-<ver>   -> cpio: mkdir failed - No such file or directory
-##                              (la cible du lien ne resout pas)
-## et toute la transaction echoue :
-##   Unpack error: rocm-hip-libraries-... / Transaction failed: Rpm transaction failed.
-## On remplace le lien par un vrai repertoire : c'est la condition pour que le
-## gestionnaire de paquets puisse ecrire dans /opt (meme cas que google-chrome
-## ou docker-desktop, documente par le template Universal Blue).
-rm -f /opt && mkdir -p /opt
+### /opt : NE PAS y toucher — géré par BlueBuild (optfix)
+## pre_build remplace /opt par un lien vers /usr/lib/opt : les RPM rocm-*
+## s'installent physiquement dans /usr/lib/opt/rocm-* et le post_build cree
+## les symlinks tmpfiles /opt/rocm-* -> /usr/lib/opt/rocm-* pour le runtime.
+## L'ancien hack `rm -f /opt && mkdir -p /opt` (utile pour le build.sh
+## d'origine, ou /opt pointait vers /var/opt inexistant) est DÉLÉTÈRE ici :
+## le post_build fait `rm -rf /opt` en fin de build et emportait toute la
+## pile ROCm — le check ci-dessous passait, mais dans une image qui la
+## perdait juste après (bug prouvé par analyse des couches OCI, 2026-10).
 
 ### ocl-icd : requis par rocm-opencl, a la place d'OpenCL-ICD-Loader
 ## L'ICD loader fourni par la base entre en conflit avec le Provide ocl-icd
-## attendu par rocm-opencl. On l'echange (|| true : absent = rien a faire).
-dnf5 -y remove OpenCL-ICD-Loader || true
-## --refresh : métadonnées en cache vs versions retirées des miroirs
-## (cf. dépôt kinoite-nvidia)
-dnf5 -y --refresh install ocl-icd
+## attendu par rocm-opencl. SWAP en TRANSACTION UNIQUE : ocl-icd fournit
+## libOpenCL.so.1 des le debut de la transaction, donc dnf ne rencontre
+## JAMAIS de dependance non satisfaite -> aucune cascade de suppression.
+## (Un `remove` suivi d'un `install` ouvrait une fenetre sans fournisseur
+## de libOpenCL.so.1 : dnf5 emportait xorg-x11-drv-nvidia-cuda-libs puis,
+## en cascade, TOUTE la pile NVIDIA userland + le kmod — 722 whiteouts,
+## nvidia-smi disparu de l'image publiée, bug 2026-10-13.)
+## Fallback : si OpenCL-ICD-Loader est absent, simple install.
+dnf5 -y swap OpenCL-ICD-Loader ocl-icd || dnf5 -y --refresh install ocl-icd
 
 ### Pile ROCm — MINIMALE pour le gaming
 ## HIP (rocm-hip-runtime, rocm-libs/rocBLAS…) = calcul GPU / IA (~5-6 Go),

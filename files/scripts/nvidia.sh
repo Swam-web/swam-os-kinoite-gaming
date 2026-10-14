@@ -91,7 +91,7 @@ depmod -a "${KERNEL_VERSION}"
 ###    moment de fabriquer les images disque (ISO).
 rm -f /etc/yum.repos.d/*terra* /etc/dnf/dnf5/repos.d/*terra* /usr/share/dnf5/repos.d/*terra*
 
-### 9. Contrôle : le module noyau doit exister
+### 9. Contrôle : le module noyau ET le userland doivent exister
 NVIDIA_KO="$(find /usr/lib/modules/"${KERNEL_VERSION}" -name 'nvidia.ko*' -print -quit)"
 if [[ -z "${NVIDIA_KO}" ]]; then
     cat /var/cache/akmods/nvidia/*.failed.log 2>/dev/null || true
@@ -99,3 +99,18 @@ if [[ -z "${NVIDIA_KO}" ]]; then
     exit 1
 fi
 echo "nvidia (RPMFusion) : OK -> ${NVIDIA_KO}"
+
+### 10. Contrôle userland : nvidia-smi et les paquets RPMFusion doivent être
+###     présents ICI — un `remove` dnf dans un module ULTÉRIEUR (rocm.sh…) a
+###     déjà cascadié leur suppression après ce point (bug 2026-10-13) ;
+###     le garde-fou définitif est dans cleanup.sh, dernier step dnf.
+command -v nvidia-smi >/dev/null 2>&1 || {
+    echo "ERREUR : nvidia-smi absent (userland NVIDIA)"
+    exit 1
+}
+rpm -q xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs \
+      xorg-x11-drv-nvidia-cuda-libs >/dev/null 2>&1 || {
+    echo "ERREUR : paquets userland NVIDIA absents"
+    exit 1
+}
+echo "nvidia userland : OK (nvidia-smi, -nvidia, -libs, -cuda-libs)"
