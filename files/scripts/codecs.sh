@@ -34,7 +34,12 @@ dnf5 config-manager setopt fedora-cisco-openh264.enabled=1
 dnf5 -y swap ffmpeg-free ffmpeg --allowerasing
 
 ### 4. Compléments multimédia / GStreamer (commande officielle RPMFusion)
-dnf5 -y install @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
+###    libheif-freeworld exclu : désynchronisé de Fedora (10/2026) — la 1.21.2
+###    exige libheif = 1.21.2, la 1.23.6 exige libheif = 1.23.6 inexistant,
+###    Fedora updates fournit 1.23.5 (via libheif-ffmpeg) → transaction sans
+###    solution. Décodage HEIC couvert par ffmpeg ; à retirer quand RPMFusion
+###    resynchronise sa 1.23.5.
+dnf5 -y install @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin,libheif-freeworld
 
 ### 5. H.264 (openh264) + lecture des DVD chiffrés
 dnf5 -y install gstreamer1-plugin-openh264 libdvdcss
