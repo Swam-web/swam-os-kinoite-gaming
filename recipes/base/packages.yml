@@ -27,6 +27,7 @@ modules:
         - tmux
         - distrobox
         - fastfetch
+        - zsh
         - libcec
 
   # Gestion thermique Intel (thermald) : évite le throttling CPU.
