@@ -28,7 +28,7 @@ fastfetch) a été reverté (commit `c4790e1`).
 | **Kernel** | CachyOS `kernel-cachyos-lto` (Clang LTO, 1000 Hz, full preempt) — COPR `bieszczaders/kernel-cachyos-lto`, remplace le kernel Fedora (pattern `install-kernel-akmods`) |
 | **NVIDIA (RPMFusion)** | `akmod-nvidia` + userland `xorg-x11-drv-nvidia` (`.i686` inclus), kmods recompilés **clang** contre le kernel CachyOS (`pahole` + `xorg-x11-drv-nvidia-kmodsrc`) |
 | **AMD ROCm (minimal gaming)** | Dépôt officiel AMD (RHEL9) : `rocm-core`, `rocm-opencl-runtime`, `rocm-smi` — installé via l'optfix BlueBuild (`/usr/lib/opt`, symlinks `/opt` au boot). **Sans la pile HIP** (`rocm-hip-runtime`, `rocm-libs`/rocBLAS ≈ 5-6 Go) : inutile aux jeux (Vulkan/DXVK via mesa) — qui en a besoin : `rpm-ostree install rocm-hip-runtime rocm-libs` |
-| **WiFi/BT MT7927** | ❌ **retiré de l'image** (2026-10) — suspect principal de la corruption de profil utilisateur (10 CVE memory-safety sur `mt7925/mt76` ; bug machine-spécifique, l'install AMD de contrôle est saine). Le driver **in-tree `mt7925e` est blacklisté** dans l'image (`/etc/modprobe.d/blacklist-mt7927.conf`) → WiFi/BT inopérants, utiliser Ethernet. Ré-activation : rétablir `mt7927.sh` (branche/`f45-wip` + git history) + supprimer la blacklist |
+| **WiFi/BT MT7927** | `mt7925e`/`mt76` + `btusb`/`btmtk` précompilés (jetm/mediatek-mt7927-dkms v2.16, clang) contre le kernel CachyOS ; firmware BT `MT6639` embarqué (absent de linux-firmware) |
 | **Codecs universels** | RPMFusion : ffmpeg complet, `@multimedia`, openh264, libdvdcss ; VA-API/Vulkan **AMD** (`mesa-*-freeworld`) **et** pont NVDEC→VA-API **NVIDIA** (`libva-nvidia-driver`) ; 32 bits complets |
 | **Gaming** | gamescope, gamemode, mangohud, vkBasalt, goverlay, steam-devices (RPM) ; Steam, Lutris, Heroic, Bottles, OBS, **BoxBuddy** (GUI distrobox)… (Flathub, `default-flatpaks`) ; **VulkanLayer flatpak** MangoHud/gamescope/vkBasalt (refs épinglées 25.08/26.08 — les couches RPM n'agissent pas dans les jeux flatpak) |
 | **Périphériques (fail-soft)** | **xpadneo** (manettes Xbox BT, rumble avancé), **xone** (dongle USB Xbox + firmware), **OpenRazer** (kmods clang + daemon), **OpenTabletDriver** (tablettes), `libcec` (HDMI CEC via adaptateur Pulse-Eight) — un échec de source n'abolit pas le build |
@@ -50,15 +50,11 @@ sudo systemctl reboot
 - Le driver **NVIDIA open** supporte **Turing (RTX 20) et plus récent**.
 - Sur machine **AMD uniquement**, l'initramfs force `nvidia.ko` qui ne trouve pas de matériel :
   avertissement bénin au boot, sans effet.
-- **MT7927 retiré de l'image (2026-10)** : suspect principal de la corruption
-  de profil utilisateur — 10 CVE memory-safety actives sur la famille
-  `mt7925/mt76` (use-after-free, OOB, NULL deref), bug **machine-spécifique**
-  (l'install AMD de contrôle est saine), dégradation progressive sur 4-6
-  boots, `chown -R` du profil réparateur, `restorecon` sans effet. L'image
-  blackliste **aussi** le driver in-tree `mt7925e` (`/etc/modprobe.d/`
-  `blacklist-mt7927.conf`) → WiFi et Bluetooth inopérants, passer par
-  l'Ethernet. Ré-activation quand le driver est sain : rétablir `mt7927.sh`
-  (git history / branche `f45-wip`) et supprimer le fichier de blacklist.
+- **MT7927 (WiFi/BT)** : modules précompilés jetm/mediatek-mt7927-dkms v2.16
+  contre le kernel CachyOS (clang) + firmware BT `BT_RAM_CODE_MT6639` embarqué.
+  Le driver avait été retiré (2026-10) comme suspect de la corruption de
+  profil utilisateur ; il a été **disculpé** (crash identique avec ou sans)
+  et est réintégré dans l'image.
 - `tsc=reliable clocksource=tsc` : retirer ces kargs en cas de dérive horaire (VM exotiques).
 - `mitigations=off` est volontairement **non activé** (voir commentaire dans `recipe.yml`).
 

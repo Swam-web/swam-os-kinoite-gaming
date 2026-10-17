@@ -31,13 +31,10 @@ modules:
     scripts:
       - rocm.sh
 
-  # MediaTek MT7927 WiFi + MT6639 Bluetooth — RETIRÉ de l'image (2026-10)
-  ## Suspect principal de la corruption de profil utilisateur (bug machine-
-  ## spécifique : 10 CVE memory-safety sur mt7925/mt76, BT en boucle sans
-  ## firmware sur vanilla). Le driver in-tree mt7925e est également
-  ## blacklisté (cf. files/system/etc/modprobe.d/blacklist-mt7927.conf).
-  ## Ré-activer : rétablir ce bloc + supprimer le fichier de blacklist
-  ## (tout l'historique dans git — cf. README caveat F45/MT7927).
+  # MediaTek MT7927 WiFi + MT6639 Bluetooth, précompilés
+  - type: script
+    scripts:
+      - mt7927.sh
 
   # Périphériques gaming — xpadneo (BT Xbox), xone (dongle USB Xbox)
   ## FAIL-SOFT : add-on matériel, sources GitHub ; le build public continue
