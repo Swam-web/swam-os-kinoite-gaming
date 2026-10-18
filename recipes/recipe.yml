@@ -124,8 +124,7 @@ modules:
       - split_lock_detect=off
       - tsc=reliable
       - clocksource=tsc
-      ## Optionnel — micro-freezes APST NVMe (coût : conso en veille) :
-      # - nvme_core.default_ps_max_latency_us=0
+      - nvme_core.default_ps_max_latency_us=0
 
   # Initramfs : régénéré pour le kernel CachyOS installé
   # (équivaut au « dracut --kver … --add ostree --add fido2 » du build.sh)
