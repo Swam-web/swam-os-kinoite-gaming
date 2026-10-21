@@ -82,23 +82,23 @@ modules:
         - vulkan-tools     # vulkaninfo (diagnostic)
         - steam-devices    # règles udev des manettes (Steam, DualSense, Xbox…)
 
-  # Services — « hyper léger » :
-  #   cups + avahi en SOCKET-ACTIVATION (démarrés uniquement à l'usage) ;
-  #   les .service équivalents sont explicitement désactivés (la base peut
-  #   les avoir activés). firewalld reste actif dès le boot.
+  # Services — impression et découverte réseau ACTIFS :
+  #   cups + avahi démarrés au boot : la socket-activation seule ne suffit
+  #   pas à la découverte mDNS des imprimantes réseau (dépannage 2026-10-21).
+  #   Les .socket restent actifs (layout Fedora standard).
+  #   firewalld reste actif dès le boot.
   #   swam-btrfs-compress : compression zstd du rootfs btrfs (no-op sinon).
   #   NB : irqbalance n'existe PAS dans kinoite — le désactiver ferait
   #   échouer le module (unité inexistante), d'où son absence de la liste.
   - type: systemd
     system:
       enabled:
+        - cups.service
         - cups.socket
         - scx_loader.service
+        - avahi-daemon.service
         - avahi-daemon.socket
         - firewalld.service
         - podman.socket
         - swam-btrfs-compress.service
         - thermald.service    # thermique Intel (inerte sur AMD)
-      disabled:
-        - cups.service
-        - avahi-daemon.service
