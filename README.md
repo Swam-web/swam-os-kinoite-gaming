@@ -35,6 +35,7 @@ fastfetch) a été reverté (commit `c4790e1`).
 | **Réactivité (socle CachyOS)** | `scx_lavd` (sched_ext, mode Gaming auto), `ananicy-cpp`, zram + sysctls `cachyos-settings` ; **`game-performance`** (fourni par `cachyos-settings`) : `powerprofilesctl` performance au lancement d'une app — à mettre dans les options de lancement Steam (`game-performance %command%`) pour les jeux hors gamemode |
 | **Optimisations gaming** | `gamemode.ini` (renice -10 via limites PAM `limits.d/swam-gamemode.conf`, gouverneur `performance`) ; PipeWire quantum **256** (~5,3 ms) ; sysctl **BBR + fq + `vm.max_map_count`** (absents de `cachyos-settings`) ; animations Plasma ÷2 (`kdeglobals` /etc/xdg) ; `thermald` (Intel, inerte AMD) ; karg `nvidia-drm.fbdev=1` |
 | **Légèreté** | Baloo (indexeur) masqué, `irqbalance` et `plasma-discover` retirés, `cups`/`avahi` en **socket-activation**, KWin `AllowTearing`, compression btrfs `zstd` |
+| **Snapshots données** | `snapper` (timeline horaire sur `/var/home`, config créée au 1er boot par `swam-snapper-setup.service`, purge progressive) + **Btrfs Assistant** (GUI : navigation/restore) + `btrfsmaintenance` (scrub/balance). Récupération fine des données — **pas un backup** (même disque) ; l'OS, lui, est versionné par ostree (`rpm-ostree rollback`) |
 
 ## Installation
 
@@ -56,6 +57,8 @@ sudo systemctl reboot
   profil utilisateur ; il a été **disculpé** (crash identique avec ou sans)
   et est réintégré dans l'image.
 - `tsc=reliable clocksource=tsc` : retirer ces kargs en cas de dérive horaire (VM exotiques).
+- `clearcpuid=514` : masque la feature CPUID 514 — **nécessaire au lancement de certains jeux**
+  (Proton/Wine). Ne retirer qu'en connaissance de cause.
 - `mitigations=off` est volontairement **non activé** (voir commentaire dans `recipe.yml`).
 
 ## Build
