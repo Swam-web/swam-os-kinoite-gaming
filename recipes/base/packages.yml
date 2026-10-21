@@ -37,6 +37,20 @@ modules:
       packages:
         - thermald
 
+  # Support AppImage (Hermes Desktop et autres) :
+  ## fuse-libs (libfuse2.so.2) N'EST PAS dans la base Kinoite — sans lui,
+  ## une AppImage ne se monte pas. fuse/fuse3 = les démons de montage
+  ## (fusermount / fusermount3 selon la version de l'AppImage).
+  ## python3 = 3.14 sur Fedora 44 (épinglé explicitement pour les outils
+  ## utilisateur type Hermes ; l'app embarque de toute façon le sien).
+  - type: dnf
+    install:
+      packages:
+        - fuse
+        - fuse3
+        - fuse-libs
+        - python3
+
   # Gaming système (RPM) — paquets vérifiés présents dans Fedora 44.
   # Les variantes .i686 sont celles que réclament les jeux 32 bits de Steam.
   - type: dnf
