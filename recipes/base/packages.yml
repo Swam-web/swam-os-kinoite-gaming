@@ -58,11 +58,13 @@ modules:
 
   # Linker : /usr/bin/ld est posé par le scriptlet alternatives de binutils,
   # qui ne s'applique pas dans les builds ostree — ld.bfd existe pourtant.
-  ## Symlink dans /usr/local/bin (présent du PATH par défaut) : rétablit
-  ## `ld` pour node-gyp et toute compilation native.
+  ## Symlink dans /usr/bin (commité dans l'image ostree ; /usr/local pointe
+  ## vers /var/usrlocal, absent du build et non commité) : rétablit `ld`
+  ## pour node-gyp et toute compilation native. Idempotent : ignoré si
+  ## binutils finit par livrer /usr/bin/ld lui-même.
   - type: script
     snippets:
-      - ln -sfn /usr/bin/ld.bfd /usr/local/bin/ld
+      - test -e /usr/bin/ld || ln -s /usr/bin/ld.bfd /usr/bin/ld
 
   # Gaming système (RPM) — paquets vérifiés présents dans Fedora 44.
   # Les variantes .i686 sont celles que réclament les jeux 32 bits de Steam.
