@@ -14,10 +14,17 @@ KERNEL_VERSION="$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}
 ### versions de paquets que Fedora vient de retirer des miroirs (supplantées
 ### par une nouvelle version, ex: mesa) -> "All mirrors were tried". Forcer
 ### le refresh rend le build insensible à ce churn amont.
+### Fallback : le rotateur mirrors.rpmfusion.org peut servir un miroir mort
+### (ex: repos.eggycrew.com, NXDOMAIN le 2026-10-20) et dnf5 retente le même
+### miroir sans en choisir un autre -> on retombe sur le serveur primaire
+### download1.rpmfusion.org (pas de mirrorlist, indépendant de la rotation).
 FEDORA="$(rpm -E %fedora)"
 dnf5 -y --refresh install \
     "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA}.noarch.rpm" \
-    "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA}.noarch.rpm"
+    "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA}.noarch.rpm" \
+|| dnf5 -y install \
+    "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA}.noarch.rpm" \
+    "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA}.noarch.rpm"
 
 ### 2. akmods (requis par le contrôle de dépendances d'akmod-nvidia)
 dnf5 -y install akmods

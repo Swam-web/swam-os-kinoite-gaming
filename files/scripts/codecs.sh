@@ -17,9 +17,14 @@ FEDORA="$(rpm -E %fedora)"
 ### 1. Dépôts RPMFusion : free + nonfree (URLs officielles de la doc)
 ### --refresh : métadonnées en cache vs versions retirées des miroirs
 ### (ex: mesa supplantée -> "All mirrors were tried")
+### Fallback download1 : miroir mort servi par le rotateur (eggycrew,
+### 2026-10-20) — voir nvidia.sh pour le détail.
 dnf5 -y --refresh install \
     "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA}.noarch.rpm" \
-    "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA}.noarch.rpm"
+    "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA}.noarch.rpm" \
+|| dnf5 -y install \
+    "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA}.noarch.rpm" \
+    "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA}.noarch.rpm"
 
 ### 1b. Dépôt tainted (nécessaire pour libdvdcss) : par NOM de paquet.
 ###     Il n'existe PAS d'URL « -release-tainted » dans free/ (404 vérifié en
