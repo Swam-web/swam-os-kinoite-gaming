@@ -13,6 +13,14 @@ modules:
       - source: system
         destination: /
 
+  # SELinux permissif persistant + dontaudit off
+  ## H1 du test factoriel (DATA/DIAG_FEDORA_2026-10-18) : les verrous historiques
+  ## sont attribués au binôme SELinux×varlink logind. Permissif = logge sans
+  ## bloquer. À RETIRER (git revert) si la phase enforcing disculpe SELinux.
+  - type: script
+    scripts:
+      - selinux-permissive.sh
+
   # Kernel CachyOS clang-LTO remplaçant le kernel Fedora
   # (shims kernel-install, rpm --erase --nodeps, versionlock)
   - type: script
