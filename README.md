@@ -89,8 +89,13 @@ sudo podman run --rm --privileged --pull=newer \
   ghcr.io/swam-web/swam-os-kinoite-gaming:latest
 ```
 
-Or via GitHub Actions: `Actions → Build disk images → Run workflow`
+Or via GitHub Actions : `Actions → Build disk images → Run workflow`
 (set `release-tag`, e.g. `v44.0`, to publish the ISO to Releases — public download).
+
+> **ISO > 2 GiB**: GitHub caps release assets at 2 GiB — the workflow splits the ISO
+> into `.part-XX` files (1900 MiB each) with a `SHA256SUMS`. Reassemble with:
+> `cat swam-os-kinoite-gaming-amd64.iso.part-* > swam-os-kinoite-gaming-amd64.iso`
+> then check `sha256sum -c swam-os-kinoite-gaming-amd64.iso.sha256`.
 
 ## Signing
 
