@@ -75,7 +75,23 @@ bluebuild validate recipes/recipe.yml
 
 ## Disk images (ISO / qcow2)
 
-Via **bootc-image-builder** (read the caveat in the `swam-os-kinoite-nvidia` repo about
+### Download the ISO (fresh install)
+
+The **v44.0** release ships the install ISO as split parts (GitHub caps release
+assets at 2 GiB; the ISO weighs 8.26 GiB):
+[github.com/Swam-web/swam-os-kinoite-gaming/releases](https://github.com/Swam-web/swam-os-kinoite-gaming/releases)
+
+Download all `swam-os-kinoite-gaming-amd64.iso.part-XX` files + `SHA256SUMS`, then:
+
+```bash
+cat swam-os-kinoite-gaming-amd64.iso.part-* > swam-os-kinoite-gaming-amd64.iso
+sha256sum -c swam-os-kinoite-gaming-amd64.iso.sha256
+```
+
+Or build it yourself via GitHub Actions: `Actions → Build disk images → Run workflow`
+(set `release-tag`, e.g. `v44.0` — the workflow splits the ISO automatically).
+
+Via **bootc-image-builder** locally (read the caveat in the `swam-os-kinoite-nvidia` repo about
 `bluebuild generate-iso` limitations):
 
 ```bash
@@ -88,15 +104,6 @@ sudo podman run --rm --privileged --pull=newer \
   --local --chown $(id -u):$(id -g) \
   ghcr.io/swam-web/swam-os-kinoite-gaming:latest
 ```
-
-Or via GitHub Actions: `Actions → Build disk images → Run workflow`
-(set `release-tag`, e.g. `v44.0`, to publish the ISO to Releases — public download).
-
-> **ISO > 2 GiB**: GitHub caps release assets at 2 GiB and this ISO weighs ~8 GiB.
-> The workflow therefore splits it into `.part-XX` files (1900 MiB each) with a
-> `SHA256SUMS`. Reassemble with:
-> `cat swam-os-kinoite-gaming-amd64.iso.part-* > swam-os-kinoite-gaming-amd64.iso`
-> then check `sha256sum -c swam-os-kinoite-gaming-amd64.iso.sha256`.
 
 ## Signing
 
