@@ -1,3 +1,5 @@
+![Kinoite Gaming — Next Generation](repo_assets/banner.png)
+
 # SwamOS — kinoite-gaming
 
 Image **bootc** (Fedora Atomic) **universelle** basée sur **Kinoite officiel**
