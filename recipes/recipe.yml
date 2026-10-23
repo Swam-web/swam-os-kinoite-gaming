@@ -65,6 +65,12 @@ modules:
     scripts:
       - wine.sh
 
+  # umu-launcher (umu-run) — lancer les jeux Windows via Proton hors Steam
+  # RPM épinglé de la release amont (non signé), asset fc44 = python 3.14
+  - type: script
+    scripts:
+      - umu.sh
+
   # Optimisations réactivité/légèreté (les 4 points) :
   #   Baloo masqué, irqbalance et Discover retirés ;
   #   KWin gaming (tearing) et compression btrfs via files/system
